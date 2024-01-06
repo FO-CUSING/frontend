@@ -10,13 +10,16 @@
     "@types/node": "^16.18.61",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
+    "kurento-client": "^7.0.0",
+    "kurento-utils": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "simple-peer": "^9.11.1",
     "styled-components": "^6.1.1",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "websocket": "^1.0.34"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -43,6 +46,8 @@
     ]
   },
   "devDependencies": {
+    "@types/kurento-client": "^6.14.13",
+    "@types/kurento-utils": "^6.7.4",
     "@types/simple-peer": "^9.11.8"
   }
 }

@@ -1,5 +1,8 @@
+// wss://3.39.179.45:32000/signal
+
 import React, { useState, useEffect, useRef } from 'react';
-import Peer from 'simple-peer';
+import Peer, { Instance } from 'simple-peer';
+
 
 import { CharacterBoxProps } from '../lib/types/main/types'; 
 import { useMovement } from '../hooks/charaterMovment';
@@ -16,7 +19,7 @@ const Main = () => {
     const { position } = useMovement();
 
     // webrtc 필요 훅
-    const [peers, setPeers] = useState([]); // 화상채팅에 참여하는 사람 정보 저장
+    const [peers, setPeers] = useState<Instance[]>([]);// 화상채팅에 참여하는 사람 정보 저장
     const [isVideoCallActive, setIsVideoCallActive] = useState(false); // 화상채팅 활성화 훅
     const [textMessage, setTextMessage] = useState(''); // 채팅관련 훅1
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);// 채팅관련 훅2
@@ -27,29 +30,50 @@ const Main = () => {
     
     //Main.tsx 파일이 생성과 동시에 소켓 연결
     useEffect(() => {
-        socketRef.current = new WebSocket('ws://43.202.127.236:8080/chat');
+        socketRef.current = new WebSocket('wss://3.39.179.45:32000/signal');
         socketRef.current.onopen = () => {
             console.log('WebSocket 연결이 열렸습니다.');
         };
         socketRef.current.onerror = (error) => {
             console.error('WebSocket 오류:', error);
         };
-
-
+        
     }, []); // 의존성 구분, 독립적으로 한번만 실행되도록 하여, 렌더링 최적화
 
+
+    //캐릭터 이동
+    useEffect(() => {
+        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            console.log("캐릭터 이동", position);
+            socketRef.current.send(JSON.stringify({ id: 'step', position : position })); 
+            
+            //영역 들어오는 부분 처리
+            if (position.y < 60 && position.y > 30 && position.x > 20 && position.x < 68 ){
+                //미디어 처리
+                console.log("영역")
+            }
+        }
+
+        
+    }, [position]);
+
+
+
+    //채팅
     const handleTextMessage = () => {
         if (textMessage.trim() !== '' && socketRef.current) {
             console.log("채팅 보냄")
-            socketRef.current.send(JSON.stringify({ type: 'text-message', message: textMessage }));
+            socketRef.current.send(JSON.stringify({ id : 'join', message: textMessage }));
             setChatMessages((prevMessages) => [...prevMessages, { user: 'You', message: textMessage }]);            
             setTextMessage('');
         }
     };
+
     
     return (
         <MainContainer>
             {/* webrtc 기능 구현 부분 */}
+
             {/* 채팅 */}
             <ChattingFrame>
                 <ChattingFrameTextList>
